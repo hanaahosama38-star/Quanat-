@@ -1,0 +1,44 @@
+import os
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+
+TOKEN = "8488973446:AAEizKu2m1embbg4kwW7_dXHcEmy-CWkG2I"
+
+# بيانات تجريبية لسنة أولى General
+materials = {
+    "Math I": [
+        {"type": "محاضرة 1", "url": "https://drive.google.com/example1"},
+    ],
+    "Physics I": [
+        {"type": "شيت 1", "url": "https://drive.google.com/example2"},
+    ],
+    "Chemistry I": [
+        {"type": "محاضرة 2", "url": "https://drive.google.com/example3"},
+    ],
+    "Biology I": [
+        {"type": "امتحان قديم", "url": "https://drive.google.com/example4"},
+    ],
+}
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [[InlineKeyboardButton(subj, callback_data=subj)] for subj in materials.keys()]
+    await update.message.reply_text("📚 سنة أولى - General\nاختار المادة:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    subject = query.data
+    if subject in materials:
+        text = f"📂 {subject}:\n"
+        for m in materials[subject]:
+            text += f"- {m['type']}: {m['url']}\n"
+        await query.edit_message_text(text)
+
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button))
+    app.run_polling()
+
+if name == "__main__":
+    main()	8488973446:AAEizKu2m1embbg4kwW7_dXHcEmy-CWkG2I 
